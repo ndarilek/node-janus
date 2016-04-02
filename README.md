@@ -56,3 +56,6 @@ navigator.mediaDevices.getUserMedia({audio: true, video: {facingMode: "environme
       this.props.onHangup()
   })
 })
+```
+
+
