@@ -2,8 +2,7 @@ import EventEmitter from "eventemitter3"
 
 const getTransactionId = () => (Math.random()*10000000).toFixed().toString()
 
-const janusFetch = (endpoint, args) => {
-  return fetch(endpoint, args)
+const janusFetch = (endpoint, args) => Session.fetch(endpoint, args)
   .then((r) => r.json())
   .then((r) => {
     if(r.janus == "error")
@@ -11,13 +10,13 @@ const janusFetch = (endpoint, args) => {
     else
       return r
   })
-}
 
 class Session extends EventEmitter {
 
   constructor(endpoint) {
     super()
-    super()
+    if(typeof Session.fetch === "undefined")
+      throw new Error("No fetch implementation configured. Please set the .fetch static property on this class to an implementor of the fetch specification.")
     this.endpoint = endpoint
     this.handles = {}
     this.destroyed = false
@@ -170,4 +169,4 @@ class Handle extends EventEmitter {
 
 }
 
-module.exports = session
+module.exports = Session

@@ -58,4 +58,16 @@ navigator.mediaDevices.getUserMedia({audio: true, video: {facingMode: "environme
 })
 ```
 
+## A Note About Fetch
 
+This API uses the [Fetch](https://fetch.spec.whatwg.org/) API extensively. Before using it, you must configure which implementation to use like so:
+
+```
+import Session fro "@nolan/janus"
+import fetch from "node-fetch"
+
+Session.fetch = fetch
+const s = new Session(...)
+```
+
+Future versions will probably check for a `fetch` function in the global namespace and assume that is the correct implementation to use, or might attempt to load polyfills or known good server-side implementations. But, for now, explicit configuration is the way to go.
