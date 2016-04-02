@@ -15,8 +15,13 @@ class Session extends EventEmitter {
 
   constructor(endpoint) {
     super()
-    if(typeof Session.fetch === "undefined")
-      throw new Error("No fetch implementation configured. Please set the .fetch static property on this class to an implementor of the fetch specification.")
+    if(typeof Session.fetch === "undefined") {
+      if(typeof fetch != "undefined") {
+        Session.fetch = fetch
+        console.warn("Setting .fetch property to the global value. Set it explicitly if things behave oddly.")
+      } else
+        throw new Error("No fetch implementation configured. Please set the .fetch static property on this class to an implementor of the fetch specification.")
+    }
     this.endpoint = endpoint
     this.handles = {}
     this.destroyed = false
