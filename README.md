@@ -1,6 +1,6 @@
 # A Leaner, Cleaner JavaScript API for the [Janus WebRTC Gateway](https://janus.conf.meetecho.com/)
 
-`npm install @nolan/janus`
+`npm install @ndarilek/janus`
 
 Works on the server via Node, in the browser via any WebRTC library ([WebRTC Adapter](https://github.com/webrtc/adapter) known to work for sure) and, hopefully, [React Native](https://facebook.github.io/react-native/).
 
@@ -71,3 +71,22 @@ const s = new Session(...)
 ```
 
 If there is a `fetch` variable in the global namespace and the `.fetch` property is unset, it will be set to the value of the `fetch` global when an instance is first created. If this isn't what you want, then set the property explicitly.
+
+## API
+
+### Session
+
+`Session` represents the entrypoint into the Janus API. In addition to creating new plugin `Handle` instances, `Session` also long-polls the Janus API for new events.
+
+#### Methods
+
+#### Events
+
+### Handle
+
+A `Handle` is obtained by attaching to a plugin from a `Session`. It supports directly messaging plugins, in addition to receiving plugin-specific events.
+
+#### Methods
+
+#### Events
+
