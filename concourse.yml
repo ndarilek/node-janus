@@ -67,3 +67,4 @@ jobs:
   - put: package
     params:
       path: repo
+      access: public
