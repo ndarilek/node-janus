@@ -1,0 +1,32 @@
+resource_types:
+
+- name: npm
+  type: docker-image
+  source:
+    repository: nolan/concourse-npm-resource
+
+resources:
+
+- name: repo
+  type: git
+  source:
+    uri: https://github.com/ndarilek/node-janus
+    branch: master
+
+- name: package
+  type: npm
+  source:
+    username: {{npm_username}}
+    password: {{npm_password}}
+    email: {{npm_email}}
+
+jobs:
+
+- name: release
+  public: true
+  plan:
+
+  - get: repo
+  - put: package
+    params:
+      path: repo
