@@ -9,12 +9,16 @@ const janusFetch = (endpoint, args) => Session.fetch(endpoint, args)
       throw new Error(r.error.reason)
     else
       return r
-  })
+  }).catch(console.error)
 
 class Session extends EventEmitter {
 
   constructor(endpoint) {
     super()
+    if(!endpoint)
+      throw new Error("Must specify an endpoint")
+    if(typeof(endpoint) != "string")
+      throw new Error("`endpoint` is not a string")
     if(typeof Session.fetch === "undefined") {
       if(typeof fetch != "undefined") {
         Session.fetch = fetch
@@ -25,19 +29,20 @@ class Session extends EventEmitter {
     this.endpoint = endpoint
     this.handles = {}
     this.destroyed = false
-    fetch(endpoint, {
+    if(!Session.getTransactionId)
+      Session.getTransactionId = getTransactionId
+    janusFetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
         janus: "create",
-        transaction: getTransactionId()
+        transaction: Session.getTransactionId()
       })
-    }).then((r) => r.json())
-    .then((r) => r.data.id)
+    }).then((r) => r.data.id)
     .then((id) => {
       this.sessionId = id
       this.emit("connected")
       this._poll()
-    })
+    }).catch(console.error)
   }
 
   fullEndpoint() {
@@ -84,7 +89,7 @@ class Session extends EventEmitter {
       body: JSON.stringify({
         janus: "attach",
         plugin: pluginId,
-        transaction: getTransactionId()
+        transaction: Session.getTransactionId()
       })
     }).then((r) => {
       const id = r.data.id
@@ -103,7 +108,7 @@ class Session extends EventEmitter {
         method: "POST",
         body: JSON.stringify({
           janus: "destroy",
-          transaction: getTransactionId()
+          transaction: Session.getTransactionId()
         })
       }).then(() => this.emit("destroyed"))
     })
@@ -124,7 +129,7 @@ class Handle extends EventEmitter {
   }
 
   message(body, jsep) {
-    const payload = {janus: "message", transaction: getTransactionId()}
+    const payload = {janus: "message", transaction: Session.getTransactionId()}
     if(body)
       payload.body = body
     else
@@ -138,7 +143,7 @@ class Handle extends EventEmitter {
   }
 
   trickle(candidates) {
-    const body = {janus: "trickle", transaction: getTransactionId()}
+    const body = {janus: "trickle", transaction: Session.getTransactionId()}
     if(!candidates)
       body.candidate = {completed: true}
     else if(candidates.constructor == Array)
@@ -156,7 +161,7 @@ class Handle extends EventEmitter {
       method: "POST",
       body: JSON.stringify({
         janus: "hangup",
-        transaction: getTransactionId()
+        transaction: Session.getTransactionId()
       })
     })
   }
@@ -167,7 +172,7 @@ class Handle extends EventEmitter {
       method: "POST",
       body: JSON.stringify({
         janus: "detach",
-        transaction: getTransactionId()
+        transaction: Session.getTransactionId()
       })
     }).then((r) => this.emit("destroyed"))
   }
