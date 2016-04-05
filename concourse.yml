@@ -5,6 +5,11 @@ resource_types:
   source:
     repository: nolan/concourse-npm-resource
 
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
 resources:
 
 - name: repo
@@ -12,6 +17,12 @@ resources:
   source:
     uri: https://github.com/ndarilek/node-janus
     branch: master
+
+- name: pull-requests
+  type: pull-request
+  source:
+    access_token: {{github_access_token}}
+    repo: ndarilek/node-janus
 
 - name: package
   type: npm
