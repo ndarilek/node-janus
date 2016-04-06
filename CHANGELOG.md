@@ -1,4 +1,8 @@
-# V0.1.1 (2016-04-05)
+# V0.1.2 (2016-04-06)
+
+ * Somehow the `lib/` directory was excluded by Concourse. Fix.
+
+# V0.1.1 (2016-04-06)
 
  * Add beginnings of a test suite.
  * Ignore .babelrc in published package.
