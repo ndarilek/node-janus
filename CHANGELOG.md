@@ -1,3 +1,7 @@
+# V0.1.4 (2016-04-06)
+
+ * Add lodash dependency.
+
 # V0.1.3 (2016-04-06)
 
  * Set appropriate `Accept` and `Content-Type` headers.

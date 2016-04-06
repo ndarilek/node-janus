@@ -1,3 +1,4 @@
+import _ from "lodash"
 import EventEmitter from "eventemitter3"
 
 const getTransactionId = () => (Math.random()*10000000).toFixed().toString()
