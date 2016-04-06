@@ -1,3 +1,7 @@
+# V0.1.3 (2016-04-06)
+
+ * Set appropriate `Accept` and `Content-Type` headers.
+
 # V0.1.2 (2016-04-06)
 
  * Somehow the `lib/` directory was excluded by Concourse. Fix.

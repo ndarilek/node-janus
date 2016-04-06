@@ -41,6 +41,10 @@ describe("Session", function() {
       assert.equal(call.args[0], "endpoint")
       assert.deepEqual(call.args[1], {
         method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           janus: "create",
           transaction: this.transactionId

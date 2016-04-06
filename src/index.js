@@ -2,8 +2,14 @@ import EventEmitter from "eventemitter3"
 
 const getTransactionId = () => (Math.random()*10000000).toFixed().toString()
 
-const janusFetch = (endpoint, args) => Session.fetch(endpoint, args)
-  .then((r) => r.json())
+const janusFetch = (endpoint, args) => Session.fetch(
+  endpoint, {
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    ...args
+  }).then((r) => r.json())
   .then((r) => {
     if(r.janus == "error")
       throw new Error(r.error.reason)
