@@ -1,3 +1,8 @@
+# V0.1.5 (2016-04-06)
+
+ * Clean up how sessions are destroyed.
+ * Eliminate double-emit of "destroyed" event.
+
 # V0.1.4 (2016-04-06)
 
  * Add lodash dependency.

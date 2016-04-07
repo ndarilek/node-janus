@@ -82,10 +82,7 @@ class Session extends EventEmitter {
         if(handle)
           handle.emit("hangup")
       }
-      if(this.destroyed) {
-        console.log("Destroying")
-        this.emit("destroyed")
-      } else
+      if(!this.destroyed)
         this._poll()
     })
   }
@@ -117,8 +114,8 @@ class Session extends EventEmitter {
           janus: "destroy",
           transaction: Session.getTransactionId()
         })
-      }).then(() => this.emit("destroyed"))
-    })
+      })
+    }).then(() => this.emit("destroyed"))
   }
 
 }

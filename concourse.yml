@@ -18,6 +18,13 @@ resources:
     uri: https://github.com/ndarilek/node-janus
     branch: master
 
+- name: releaseRepo
+  type: git
+  source:
+    uri: https://github.com/ndarilek/node-janus
+    branch: master
+    tag_filter: [0-9]*
+
 - name: pull-requests
   type: pull-request
   source:
@@ -27,9 +34,7 @@ resources:
 - name: package
   type: npm
   source:
-    username: {{npm_username}}
-    password: {{npm_password}}
-    email: {{npm_email}}
+    token: {{npm_token}}
 
 jobs:
 
@@ -61,10 +66,11 @@ jobs:
   public: true
   plan:
 
-  - get: repo
+  - get: releaseRepo
     passed: [test]
+    trigger: true
 
   - put: package
     params:
-      path: repo
+      path: releaseRepo
       access: public
