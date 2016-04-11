@@ -30,6 +30,9 @@ class Session extends EventEmitter {
       if(typeof fetch != "undefined") {
         Session.fetch = fetch
         console.warn("Setting .fetch property to the global value. Set it explicitly if things behave oddly.")
+      } else if(typeof window != "undefined" && window.fetch) {
+        Session.fetch = window.fetch.bind(window)
+        console.warn("Setting .fetch property to the value of window.fetch. Set it explicitly if things behave oddly.")
       } else
         throw new Error("No fetch implementation configured. Please set the .fetch static property on this class to an implementor of the fetch specification.")
     }

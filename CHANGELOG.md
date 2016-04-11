@@ -1,3 +1,7 @@
+# V0.1.6 (2016-04-11)
+
+ * If `window.fetch` is defined, set `Session.fetch` to its correctly-bound value.
+
 # V0.1.5 (2016-04-06)
 
  * Clean up how sessions are destroyed.
