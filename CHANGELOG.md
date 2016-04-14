@@ -1,3 +1,8 @@
+# V0.2.0 (2016-04-14)
+
+ * Rewrite in TypeScript.
+ * Remove need to set `Session.fetch`.
+
 # V0.1.7 (2016-04-11)
 
  * Prefer `window.fetch` to `fetch`.
