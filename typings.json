@@ -1,0 +1,9 @@
+{
+  "ambientDependencies": {
+    "es6-promise": "registry:dt/es6-promise#0.0.0+20160317120654",
+    "eventemitter3": "registry:dt/eventemitter3#1.1.1+20151208234524",
+    "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160316155526",
+    "lodash": "registry:dt/lodash#3.10.0+20160330154726",
+    "object-assign": "registry:dt/object-assign#4.0.1+20160316155526"
+  }
+}

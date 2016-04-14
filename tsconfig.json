@@ -1,0 +1,15 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "outDir": "lib/"
+  },
+  "files": [
+    "./src/index.ts",
+    "./typings/main.d.ts"
+  ]
+}

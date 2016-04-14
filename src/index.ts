@@ -1,10 +1,13 @@
-import _ from "lodash"
-import EventEmitter from "eventemitter3"
-import objectAssign from "object-assign"
+import {Promise} from "es6-promise"
+import * as EventEmitter from "eventemitter3"
+import fetch from "isomorphic-fetch"
+import * as _ from "lodash"
+import objectAssign = require("object-assign")
+import {CheckParams} from 'runtime-type-checks';
 
-const getTransactionId = () => (Math.random()*10000000).toFixed().toString()
+const getTransactionId = (): string => (Math.random()*10000000).toFixed().toString()
 
-const janusFetch = (endpoint, args) => Session.fetch(
+const janusFetch = (endpoint: string, args?: Object): Promise<any> => fetch(
   endpoint, objectAssign({
     headers: {
       "Accept": "application/json",
@@ -16,31 +19,32 @@ const janusFetch = (endpoint, args) => Session.fetch(
       throw new Error(r.error.reason)
     else
       return r
-  }).catch(console.error)
+  })
 
-class Session extends EventEmitter {
+interface EventPayload {
+  data?: Object
+  jsep?: Object
+}
 
-  constructor(endpoint) {
+interface Handles {
+  [id: number]: Handle
+}
+
+@CheckParams()
+export default class Session extends EventEmitter {
+
+  static getTransactionId = getTransactionId
+
+  private handles: Handles = {}
+
+  destroyed = false
+
+  sessionId: number
+
+  constructor(private endpoint: string) {
     super()
-    if(!endpoint)
-      throw new Error("Must specify an endpoint")
-    if(typeof(endpoint) != "string")
-      throw new Error("`endpoint` is not a string")
-    if(typeof Session.fetch == "undefined") {
-      if(typeof window != "undefined" && window.fetch) {
-        Session.fetch = window.fetch.bind(window)
-        console.warn("Setting .fetch property to the value of window.fetch. Set it explicitly if things behave oddly.")
-      } else if(typeof fetch != "undefined") {
-        Session.fetch = fetch
-        console.warn("Setting .fetch property to the global value. Set it explicitly if things behave oddly.")
-      } else
-        throw new Error("No fetch implementation configured. Please set the .fetch static property on this class to an implementor of the fetch specification.")
-    }
-    this.endpoint = endpoint
-    this.handles = {}
-    this.destroyed = false
-    if(!Session.getTransactionId)
-      Session.getTransactionId = getTransactionId
+    if(!endpoint || endpoint.length == 0)
+      throw new Error("Endpoint not specified")
     janusFetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
@@ -55,7 +59,7 @@ class Session extends EventEmitter {
     }).catch(console.error)
   }
 
-  fullEndpoint() {
+  fullEndpoint(): string {
     return `${this.endpoint}/${this.sessionId}`
   }
 
@@ -66,7 +70,7 @@ class Session extends EventEmitter {
       if(r.sender && this.handles[r.sender])
         handle = this.handles[r.sender]
       if(r.janus == "event" && handle) {
-        const payload = {}
+        const payload: EventPayload = {}
         if(r.plugindata && r.plugindata.data)
           payload.data = r.plugindata.data
         if(r.jsep)
@@ -90,7 +94,7 @@ class Session extends EventEmitter {
     })
   }
 
-  attach(pluginId) {
+  attach(pluginId: string) {
     return janusFetch(this.fullEndpoint(), {
       method: "POST",
       body: JSON.stringify({
@@ -109,7 +113,7 @@ class Session extends EventEmitter {
   destroy() {
     this.emit("destroying")
     this.destroyed = true
-    Promise.all(_.values(this.handles).map((h) => h.destroy()))
+    Promise.all(_.values(this.handles).map((h: Handle) => h.destroy()))
     .then(() => {
       janusFetch(this.fullEndpoint(), {
         method: "POST",
@@ -123,20 +127,33 @@ class Session extends EventEmitter {
 
 }
 
-class Handle extends EventEmitter {
+interface CandidatePayload {
+  janus: string
+  transaction: string
+  candidate?: Object
+  candidates?: Array<any>
+}
 
-  constructor(session, id) {
+interface MessagePayload {
+  janus: string
+  transaction: string
+  body?: any
+  jsep?: Object
+}
+
+@CheckParams()
+export class Handle extends EventEmitter {
+
+  constructor(private session: Session, private id: number) {
     super()
-    this.session = session
-    this.id = id
   }
 
   fullEndpoint() {
     return `${this.session.fullEndpoint()}/${this.id}`
   }
 
-  message(body, jsep) {
-    const payload = {janus: "message", transaction: Session.getTransactionId()}
+  message(body: Object, jsep: Object) {
+    const payload: MessagePayload = {janus: "message", transaction: Session.getTransactionId()}
     if(body)
       payload.body = body
     else
@@ -150,7 +167,7 @@ class Handle extends EventEmitter {
   }
 
   trickle(candidates) {
-    const body = {janus: "trickle", transaction: Session.getTransactionId()}
+    const body: CandidatePayload = {janus: "trickle", transaction: Session.getTransactionId()}
     if(!candidates)
       body.candidate = {completed: true}
     else if(candidates.constructor == Array)
@@ -185,5 +202,3 @@ class Handle extends EventEmitter {
   }
 
 }
-
-module.exports = Session

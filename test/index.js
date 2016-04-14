@@ -1,7 +1,7 @@
 import assert from "assert"
 import simple from "simple-mock"
 
-import Session from "../src"
+import Session from "../lib"
 
 describe("Session", function() {
 
@@ -10,7 +10,7 @@ describe("Session", function() {
     simple.mock(this.result, "json").resolveWith(this.result)
     this.transactionId = "0"
     simple.mock(Session, "getTransactionId").returnWith(this.transactionId)
-    simple.mock(Session, "fetch").resolveWith(this.result)
+    simple.mock(global, "fetch").resolveWith(this.result)
     simple.mock(Session.prototype, "emit")
     simple.mock(Session.prototype, "_poll").resolveWith(true)
   })
@@ -20,11 +20,6 @@ describe("Session", function() {
   })
 
   describe("constructor", function() {
-
-    it("throws if no `fetch` implementation is specified", function() {
-      Session.fetch = null
-      assert.throws(() => new Session())
-    })
 
     it("throws if no endpoint is specified", function() {
       assert.throws(() => new Session())
@@ -36,8 +31,8 @@ describe("Session", function() {
 
     it("creates a Janus session at the specified endpoint", function() {
       const s = new Session("endpoint")
-      assert(Session.fetch.called)
-      const call = Session.fetch.calls[0]
+      assert(fetch.called)
+      const call = fetch.calls[0]
       assert.equal(call.args[0], "endpoint")
       assert.deepEqual(call.args[1], {
         method: "POST",
