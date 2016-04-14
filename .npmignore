@@ -2,3 +2,6 @@ src
 credentials.yml
 concourse.yml
 .babelrc
+tsconfig.json
+typings
+typings.json
