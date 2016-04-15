@@ -1,3 +1,8 @@
+# V0.2.2 (2016-04-15)
+
+ * Track destroying/destroyed status of sessions and guard against double destroying.
+ * Don't allow attaching handles to destroying/destroyed sessions.
+
 # V0.2.1 (2016-04-15)
 
  * Remove runtime typechecking as it interferes with statics properties.
