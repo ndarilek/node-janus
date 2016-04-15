@@ -38,6 +38,7 @@ export default class Session extends EventEmitter {
   private handles: Handles = {}
 
   private destroyed = false
+  private destroying = false
 
   private sessionId: number
 
@@ -91,12 +92,14 @@ export default class Session extends EventEmitter {
         if(handle)
           handle.emit("hangup")
       }
-      if(!this.destroyed)
+      if(!this.destroyed && !this.destroying)
         this.poll()
     })
   }
 
   attach(pluginId: string) {
+    if(this.destroyed || this.destroying)
+      throw new Error("Can't attach new plugins to sessions that are destroyed or destroying")
     return janusFetch(this.fullEndpoint(), {
       method: "POST",
       body: JSON.stringify({
@@ -113,18 +116,28 @@ export default class Session extends EventEmitter {
   }
 
   destroy() {
-    this.emit("destroying")
-    this.destroyed = true
-    Promise.all(_.values(this.handles).map((h: Handle) => h.destroy()))
-    .then(() => {
-      janusFetch(this.fullEndpoint(), {
-        method: "POST",
-        body: JSON.stringify({
-          janus: "destroy",
-          transaction: Session.getTransactionId()
+    if(!this.destroying && !this.destroyed) {
+      this.destroying = true
+      this.emit("destroying")
+      Promise.all(_.values(this.handles).map((h: Handle) => h.destroy()))
+      .then(() => {
+        janusFetch(this.fullEndpoint(), {
+          method: "POST",
+          body: JSON.stringify({
+            janus: "destroy",
+            transaction: Session.getTransactionId()
+          })
         })
+      }).then(() => {
+        this.destroying = false
+        this.destroyed = true
+        this.emit("destroyed")
+      }).catch((err) => {
+        console.error("Error destroying", err)
+        this.destroying = false
+        this.destroyed = false
       })
-    }).then(() => this.emit("destroyed"))
+    }
   }
 
 }
