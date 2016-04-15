@@ -12,7 +12,7 @@ describe("Session", function() {
     simple.mock(Session, "getTransactionId").returnWith(this.transactionId)
     simple.mock(global, "fetch").resolveWith(this.result)
     simple.mock(Session.prototype, "emit")
-    simple.mock(Session.prototype, "_poll").resolveWith(true)
+    simple.mock(Session.prototype, "poll").resolveWith(true)
   })
 
   afterEach(function() {
@@ -59,7 +59,7 @@ describe("Session", function() {
     it("starts polling when created", function(done) {
       const s = new Session("endpoint")
       setTimeout(() => {
-        assert(s._poll.called)
+        assert(s.poll.called)
         done()
       }, 50)
     })

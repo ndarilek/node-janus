@@ -37,9 +37,9 @@ export default class Session extends EventEmitter {
 
   private handles: Handles = {}
 
-  destroyed = false
+  private destroyed = false
 
-  sessionId: number
+  private sessionId: number
 
   constructor(private endpoint: string) {
     super()
@@ -57,15 +57,15 @@ export default class Session extends EventEmitter {
     .then((id) => {
       this.sessionId = id
       this.emit("connected")
-      this._poll()
+      this.poll()
     }).catch(console.error)
   }
 
-  fullEndpoint(): string {
+  fullEndpoint() {
     return `${this.endpoint}/${this.sessionId}`
   }
 
-  _poll() {
+  private poll() {
     janusFetch(this.fullEndpoint())
     .then((r) => {
       let handle = null
@@ -92,7 +92,7 @@ export default class Session extends EventEmitter {
           handle.emit("hangup")
       }
       if(!this.destroyed)
-        this._poll()
+        this.poll()
     })
   }
 
@@ -133,7 +133,7 @@ interface CandidatePayload {
   janus: string
   transaction: string
   candidate?: Object
-  candidates?: Array<any>
+  candidates?: Array<Object>
 }
 
 interface MessagePayload {
@@ -149,7 +149,7 @@ export class Handle extends EventEmitter {
     super()
   }
 
-  fullEndpoint() {
+  private fullEndpoint() {
     return `${this.session.fullEndpoint()}/${this.id}`
   }
 
@@ -167,12 +167,12 @@ export class Handle extends EventEmitter {
     })
   }
 
-  trickle(candidates) {
+  trickle(candidates?: Array<Object> | Object) {
     const body: CandidatePayload = {janus: "trickle", transaction: Session.getTransactionId()}
     if(!candidates)
       body.candidate = {completed: true}
     else if(candidates.constructor == Array)
-      body.candidates = candidates
+      body.candidates = candidates as Array<Object>
     else if(typeof(candidates) == "object")
       body.candidate = candidates
     return janusFetch(this.fullEndpoint(), {
