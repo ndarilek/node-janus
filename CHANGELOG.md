@@ -1,3 +1,7 @@
+# V0.2.3 (2016-04-15)
+
+ * postinstall script no longer expects typings to be installed.
+
 # V0.2.2 (2016-04-15)
 
  * Track destroying/destroyed status of sessions and guard against double destroying.

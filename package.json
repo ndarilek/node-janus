@@ -1,14 +1,13 @@
 {
   "name": "@ndarilek/janus",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Simple API for the Janus media server",
   "main": "lib/index.js",
   "typings": "lib/index",
   "scripts": {
-    "build": "tsc",
-    "postinstall": "typings install",
+    "build": "typings install && tsc",
     "prepublish": "npm run build",
-    "pretest": "tsc",
+    "pretest": "npm run build",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
