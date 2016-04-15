@@ -1,3 +1,8 @@
+# V0.2.1 (2016-04-15)
+
+ * Remove runtime typechecking as it interferes with statics properties.
+ * Add additional typechecks.
+
 # V0.2.0 (2016-04-14)
 
  * Rewrite in TypeScript.
