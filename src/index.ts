@@ -3,7 +3,8 @@ import * as EventEmitter from "eventemitter3"
 import fetch from "isomorphic-fetch"
 import * as _ from "lodash"
 import objectAssign = require("object-assign")
-import {CheckParams} from 'runtime-type-checks';
+
+export {EventEmitter}
 
 const getTransactionId = (): string => (Math.random()*10000000).toFixed().toString()
 
@@ -30,10 +31,9 @@ interface Handles {
   [id: number]: Handle
 }
 
-@CheckParams()
 export default class Session extends EventEmitter {
 
-  static getTransactionId = getTransactionId
+  static getTransactionId: () => string = getTransactionId
 
   private handles: Handles = {}
 
@@ -45,6 +45,8 @@ export default class Session extends EventEmitter {
     super()
     if(!endpoint || endpoint.length == 0)
       throw new Error("Endpoint not specified")
+    if(typeof(endpoint) != "string")
+      throw new Error("Endpoint not a string")
     janusFetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
@@ -141,7 +143,6 @@ interface MessagePayload {
   jsep?: Object
 }
 
-@CheckParams()
 export class Handle extends EventEmitter {
 
   constructor(private session: Session, private id: number) {
