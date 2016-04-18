@@ -1,3 +1,7 @@
+# V0.2.4 (2016-04-18)
+
+ * Correctly set up `fetch` global by importing `isomorphic-fetch` for side-effects.
+
 # V0.2.3 (2016-04-15)
 
  * postinstall script no longer expects typings to be installed.
