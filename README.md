@@ -4,6 +4,14 @@
 
 Works on the server via Node, in the browser via any WebRTC library ([WebRTC Adapter](https://github.com/webrtc/adapter) known to work for sure) and, hopefully, [React Native](https://facebook.github.io/react-native/).
 
+## A Note About Fetch
+
+This module expects a `fetch` implementation to be present in global scope. Unfortunately, providing this automatically is somewhat error-prone because React Native seems to throw a fit if this module tries to set up `isomorphic-fetch`. The best way to do this is to depend on `isomorphic-fetch` in consuming modules, and:
+
+`import "isomorphic-fetch"`
+
+in consuming code to set things up correctly. In React Native this isn't necessary and shouldn't be done since `fetch` is already set up.
+
 ## Example
 
 Here is an example of part of the code I use to set up a WebRTC session with Janus in the browser. This is from a React component, with various event-handlers passed in from its container component, and using [Toastr](https://github.com/CodeSeven/toastr) for alerts:
