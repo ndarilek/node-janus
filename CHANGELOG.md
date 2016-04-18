@@ -1,3 +1,7 @@
+# V0.2.5 (2016-04-18)
+
+ * Turns out React Native doesn't like us trying to set up isomorphic-fetch, so now this is the user's responsibility.
+
 # V0.2.4 (2016-04-18)
 
  * Correctly set up `fetch` global by importing `isomorphic-fetch` for side-effects.
