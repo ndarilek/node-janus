@@ -1,6 +1,6 @@
 import {Promise} from "es6-promise"
 import * as EventEmitter from "eventemitter3"
-import fetch from "isomorphic-fetch"
+import "isomorphic-fetch"
 import * as _ from "lodash"
 import objectAssign = require("object-assign")
 
