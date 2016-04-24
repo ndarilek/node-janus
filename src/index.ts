@@ -171,7 +171,11 @@ interface MessagePayload {
 
 export class Handle extends EventEmitter {
 
-  constructor(private session: Session, private id: number) {
+  get id(): number {
+    return this._id
+  }
+
+  constructor(private session: Session, private _id: number) {
     super()
   }
 
@@ -226,10 +230,7 @@ export class Handle extends EventEmitter {
         transaction: Session.getTransactionId()
       })
     }).then((r) => this.emit("destroyed"))
-    .catch((err) => {
-      console.log("Got an error", err)
-      this.emit("error", err)
-    })
+    .catch((err) => this.emit("error", err))
   }
 
 }

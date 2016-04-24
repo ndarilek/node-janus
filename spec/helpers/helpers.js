@@ -53,3 +53,7 @@ beforeAll(function(done) {
 afterAll(function(done) {
   this.httpSpy.server.stop(done)
 })
+
+beforeEach(function() {
+  spyOn(global, "fetch").and.callThrough()
+})

@@ -8,7 +8,6 @@ describe("Session", function() {
     this.transactionId = "0"
     spyOn(Session, "getTransactionId").and.returnValue(this.transactionId)
     spyOn(Session.prototype, "emit").and.callThrough()
-    spyOn(global, "fetch").and.callThrough()
     spyOn(Handle.prototype, "emit").and.callThrough()
   })
 
