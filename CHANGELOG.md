@@ -6,6 +6,7 @@
  * Janus errors now emit `error` events to `Session`.
  * All media events now include the entire Janus payload.
  * Added additional error-handling.
+ * Make `Session.prototype.id` a public, read-only property.
 
 # V0.2.5 (2016-04-18)
 

@@ -39,7 +39,11 @@ export default class Session extends EventEmitter {
   private destroyed = false
   private destroying = false
 
-  private id: number
+  private _id: number
+
+  get id(): number {
+    return this._id
+  }
 
   private started = false
 
@@ -57,7 +61,7 @@ export default class Session extends EventEmitter {
       })
     }).then((r) => r.data.id)
     .then((id) => {
-      this.id = id
+      this._id = id
       this.emit("connected")
       if(start)
         this.poll()
