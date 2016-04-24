@@ -145,6 +145,8 @@ export default class Session extends EventEmitter {
         this.started = false
         this.destroying = false
         this.destroyed = true
+        this.handles = {}
+        this._id = null
         this.emit("destroyed")
       }).catch((err) => {
         this.destroying = false
