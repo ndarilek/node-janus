@@ -3,3 +3,4 @@ lib
 credentials.yml
 typings
 coverage
+*.log
