@@ -39,9 +39,11 @@ export default class Session extends EventEmitter {
   private destroyed = false
   private destroying = false
 
-  private sessionId: number
+  private id: number
 
-  constructor(private endpoint: string) {
+  private started = false
+
+  constructor(private endpoint: string, start: boolean = true) {
     super()
     if(!endpoint || endpoint.length == 0)
       throw new Error("Endpoint not specified")
@@ -55,17 +57,23 @@ export default class Session extends EventEmitter {
       })
     }).then((r) => r.data.id)
     .then((id) => {
-      this.sessionId = id
+      this.id = id
       this.emit("connected")
-      this.poll()
+      if(start)
+        this.poll()
     }).catch(console.error)
   }
 
   fullEndpoint() {
-    return `${this.endpoint}/${this.sessionId}`
+    return `${this.endpoint}/${this.id}`
   }
 
-  private poll() {
+  poll() {
+    if(this.destroying || this.destroyed)
+      throw new Error("Session is destroying or destroyed, please create another")
+    if(this.started)
+      return
+    this.started = true
     janusFetch(this.fullEndpoint())
     .then((r) => {
       let handle = null
@@ -81,7 +89,7 @@ export default class Session extends EventEmitter {
       } else if(r.janus == "webrtcup") {
         this.emit("webrtcup", r)
         if(handle)
-          handle.emit("webrtcup")
+          handle.emit("webrtcup", r)
       } else if(r.janus == "media") {
         this.emit("media", r)
         if(handle)
@@ -89,14 +97,16 @@ export default class Session extends EventEmitter {
       } else if(r.janus == "hangup")  {
         this.emit("hangup", r)
         if(handle)
-          handle.emit("hangup")
+          handle.emit("hangup", r)
       }
       if(!this.destroyed && !this.destroying)
         this.poll()
-    })
+    }).catch((err) => this.emit("error", err))
   }
 
   attach(pluginId: string) {
+    if(!pluginId || !pluginId.length)
+      throw new Error("No plugin ID specified")
     if(this.destroyed || this.destroying)
       throw new Error("Can't attach new plugins to sessions that are destroyed or destroying")
     return janusFetch(this.fullEndpoint(), {
@@ -118,24 +128,24 @@ export default class Session extends EventEmitter {
     if(!this.destroying && !this.destroyed) {
       this.destroying = true
       this.emit("destroying")
-      Promise.all(_.values(this.handles).map((h: Handle) => h.destroy()))
-      .then(() => {
-        janusFetch(this.fullEndpoint(), {
-          method: "POST",
-          body: JSON.stringify({
-            janus: "destroy",
-            transaction: Session.getTransactionId()
-          })
+      const promise = Promise.all(_.values(this.handles).map((h: Handle) => h.destroy()))
+      .then(() => janusFetch(this.fullEndpoint(), {
+        method: "POST",
+        body: JSON.stringify({
+          janus: "destroy",
+          transaction: Session.getTransactionId()
         })
-      }).then(() => {
+      })).then((r) => {
+        this.started = false
         this.destroying = false
         this.destroyed = true
         this.emit("destroyed")
       }).catch((err) => {
-        console.error("Error destroying", err)
         this.destroying = false
-        this.destroyed = false
+        this.destroyed = true
+        this.emit("error", err)
       })
+      return promise
     }
   }
 
@@ -205,13 +215,17 @@ export class Handle extends EventEmitter {
 
   destroy() {
     this.emit("destroying")
-    janusFetch(this.fullEndpoint(), {
+    return janusFetch(this.fullEndpoint(), {
       method: "POST",
       body: JSON.stringify({
         janus: "detach",
         transaction: Session.getTransactionId()
       })
     }).then((r) => this.emit("destroyed"))
+    .catch((err) => {
+      console.log("Got an error", err)
+      this.emit("error", err)
+    })
   }
 
 }

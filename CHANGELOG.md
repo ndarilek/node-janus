@@ -1,3 +1,12 @@
+# 0.3.0
+
+ * Rewrote tests in Jasmine and vastly expanded coverage.
+ * Add `start` parameter to new sessions to determine whether they start polling on creation.
+ * `Session.prototype.poll()` is now public and starts polling if the `Session` was created stopped.
+ * Janus errors now emit `error` events to `Session`.
+ * All media events now include the entire Janus payload.
+ * Added additional error-handling.
+
 # V0.2.5 (2016-04-18)
 
  * Turns out React Native doesn't like us trying to set up isomorphic-fetch, so now this is the user's responsibility.
