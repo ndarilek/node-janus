@@ -80,31 +80,33 @@ export default class Session extends EventEmitter {
     this.started = true
     janusFetch(this.fullEndpoint())
     .then((r) => {
-      let handle = null
-      if(r.sender && this.handles[r.sender])
-        handle = this.handles[r.sender]
-      if(r.janus == "event" && handle) {
-        const payload: EventPayload = {}
-        if(r.plugindata && r.plugindata.data)
-          payload.data = r.plugindata.data
-        if(r.jsep)
-          payload.jsep = r.jsep
-        handle.emit("event", payload)
-      } else if(r.janus == "webrtcup") {
-        this.emit("webrtcup", r)
-        if(handle)
-          handle.emit("webrtcup", r)
-      } else if(r.janus == "media") {
-        this.emit("media", r)
-        if(handle)
-          handle.emit("media", r)
-      } else if(r.janus == "hangup")  {
-        this.emit("hangup", r)
-        if(handle)
-          handle.emit("hangup", r)
-      }
-      if(!this.destroyed && !this.destroying)
-        this.poll()
+      if(!this.destroying && !this.destroyed) {
+        let handle = null
+        if(r.sender && this.handles[r.sender])
+          handle = this.handles[r.sender]
+        if(r.janus == "event" && handle) {
+          const payload: EventPayload = {}
+          if(r.plugindata && r.plugindata.data)
+            payload.data = r.plugindata.data
+          if(r.jsep)
+            payload.jsep = r.jsep
+          handle.emit("event", payload)
+        } else if(r.janus == "webrtcup") {
+          this.emit("webrtcup", r)
+          if(handle)
+            handle.emit("webrtcup", r)
+        } else if(r.janus == "media") {
+          this.emit("media", r)
+          if(handle)
+            handle.emit("media", r)
+        } else if(r.janus == "hangup")  {
+          this.emit("hangup", r)
+          if(handle)
+            handle.emit("hangup", r)
+        }
+        if(!this.destroyed && !this.destroying)
+          this.poll()
+        }
     }).catch((err) => this.emit("error", err))
   }
 
