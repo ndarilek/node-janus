@@ -1,6 +1,6 @@
 {
   "name": "@ndarilek/janus",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "Simple API for the Janus media server",
   "main": "lib/index.js",
   "typings": "lib/index",

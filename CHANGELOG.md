@@ -1,4 +1,4 @@
-# 0.3.0
+# 0.3.0 (2016-04-24)
 
  * Rewrote tests in Jasmine and vastly expanded coverage.
  * Add `start` parameter to new sessions to determine whether they start polling on creation.
