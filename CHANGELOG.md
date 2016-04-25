@@ -1,3 +1,7 @@
+# 0.4.0 (2016-04-25)
+
+ * Add ability to connect to an existing session.
+
 # 0.3.1 (2016-04-25)
 
  * Remove files that should not have been published.

@@ -14,7 +14,7 @@ describe("Session", function() {
   describe("constructor", function() {
 
     beforeEach(function() {
-      spyOn(Session.prototype, "poll")
+      spyOn(Session.prototype, "poll").and.callThrough()
     })
 
     it("throws if no endpoint is specified", function() {
@@ -38,6 +38,20 @@ describe("Session", function() {
           transaction: this.transactionId
         })
       })
+    })
+
+    it("attaches to the specified session ID if one is given", function(done) {
+      const s = new Session(this.endpoint, true, 100)
+      setTimeout(() => {
+        expect(Session.prototype.poll).toHaveBeenCalled()
+        expect(fetch).toHaveBeenCalledWith(`${this.endpoint}/100`, {
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          }
+        })
+        done()
+      }, 100)
     })
 
     it("should emit `connected` if successful", function(done) {

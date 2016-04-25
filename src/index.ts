@@ -47,25 +47,34 @@ export default class Session extends EventEmitter {
 
   private started = false
 
-  constructor(private endpoint: string, start: boolean = true) {
+  private connected = false
+
+  constructor(private endpoint: string, start: boolean = true, sessionId?: number) {
     super()
     if(!endpoint || endpoint.length == 0)
       throw new Error("Endpoint not specified")
     if(typeof(endpoint) != "string")
       throw new Error("Endpoint not a string")
-    janusFetch(endpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        janus: "create",
-        transaction: Session.getTransactionId()
-      })
-    }).then((r) => r.data.id)
-    .then((id) => {
-      this._id = id
-      this.emit("connected")
+    if(sessionId) {
+      this._id = sessionId
       if(start)
         this.poll()
-    }).catch(console.error)
+    } else {
+      janusFetch(endpoint, {
+        method: "POST",
+        body: JSON.stringify({
+          janus: "create",
+          transaction: Session.getTransactionId()
+        })
+      }).then((r) => r.data.id)
+      .then((id) => {
+        this._id = id
+        this.connected = true
+        this.emit("connected")
+        if(start)
+          this.poll()
+      }).catch((err) => this.emit("error", err))
+    }
   }
 
   fullEndpoint() {
@@ -81,6 +90,10 @@ export default class Session extends EventEmitter {
     janusFetch(this.fullEndpoint())
     .then((r) => {
       if(!this.destroying && !this.destroyed) {
+        if(!this.connected) {
+          this.connected = true
+          this.emit("connected")
+        }
         let handle = null
         if(r.sender && this.handles[r.sender])
           handle = this.handles[r.sender]
