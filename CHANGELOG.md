@@ -1,3 +1,7 @@
+# 0.3.1 (2016-04-25)
+
+ * Remove files that should not have been published.
+
 # 0.3.0 (2016-04-24)
 
  * Rewrote tests in Jasmine and vastly expanded coverage.

@@ -5,3 +5,4 @@ concourse.yml
 tsconfig.json
 typings
 typings.json
+coverage
