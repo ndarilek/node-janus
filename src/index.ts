@@ -13,8 +13,12 @@ const janusFetch = (endpoint: string, args?: Object): Promise<any> => fetch(
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
-  }, args)).then((r) => r.json())
-  .then((r) => {
+  }, args)).then((r) => {
+    if(r.ok)
+      return r.json()
+    else
+      throw new Error(r.statusText)
+  }).then((r) => {
     if(r.janus == "error")
       throw new Error(r.error.reason)
     else

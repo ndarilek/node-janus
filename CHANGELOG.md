@@ -1,3 +1,7 @@
+# 0.4.1 (2016-04-25)
+
+ * Bad HTTP status codes are now correctly handled before converting result to JSON.
+
 # 0.4.0 (2016-04-25)
 
  * Add ability to connect to an existing session.
