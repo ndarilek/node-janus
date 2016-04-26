@@ -129,6 +129,15 @@ describe("Session", function() {
         })
       })
 
+      it("Attaches to the specified existing plugin ID", function(done) {
+        this.session.attach(100)
+        .then((handle) => {
+          expect(handle.id).toBe(100)
+          expect(this.session.handles[100]).toBe(handle)
+          done()
+        })
+      })
+
       it("does not work on a destroyed session", function() {
         this.session.destroy()
         expect(() => this.session.attach("plugin")).toThrow()

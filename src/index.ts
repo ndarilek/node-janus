@@ -127,24 +127,31 @@ export default class Session extends EventEmitter {
     }).catch((err) => this.emit("error", err))
   }
 
-  attach(pluginId: string) {
-    if(!pluginId || !pluginId.length)
-      throw new Error("No plugin ID specified")
-    if(this.destroyed || this.destroying)
-      throw new Error("Can't attach new plugins to sessions that are destroyed or destroying")
-    return janusFetch(this.fullEndpoint(), {
-      method: "POST",
-      body: JSON.stringify({
-        janus: "attach",
-        plugin: pluginId,
-        transaction: Session.getTransactionId()
+  attach(pluginId: string | number): Promise<any> {
+    if(typeof(pluginId) == "string") {
+      if(!(pluginId as string).length)
+        throw new Error("No plugin ID specified")
+      if(this.destroyed || this.destroying)
+        throw new Error("Can't attach new plugins to sessions that are destroyed or destroying")
+      return janusFetch(this.fullEndpoint(), {
+        method: "POST",
+        body: JSON.stringify({
+          janus: "attach",
+          plugin: pluginId,
+          transaction: Session.getTransactionId()
+        })
+      }).then((r) => {
+        const id = r.data.id
+        const h = new Handle(this, id)
+        this.handles[id] = h
+        return h
       })
-    }).then((r) => {
-      const id = r.data.id
-      const h = new Handle(this, id)
-      this.handles[id] = h
-      return h
-    })
+    } else if(typeof(pluginId) == "number") {
+      const handle = new Handle(this, pluginId as number)
+      this.handles[pluginId] = handle
+      return Promise.resolve(handle)
+    }
+    throw new Error("Bad plugin ID")
   }
 
   destroy() {
