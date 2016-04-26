@@ -1,4 +1,4 @@
-# 0.5.0
+# 0.5.0 (2016-04-25)
 
  * Add ability to connect to an existing handle.
 
