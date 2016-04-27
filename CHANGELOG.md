@@ -1,3 +1,7 @@
+# 0.5.1 (2016-04-26)
+
+ * Fix issue where sessions would only poll once.
+
 # 0.5.0 (2016-04-25)
 
  * Add ability to connect to an existing handle.
