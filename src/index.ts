@@ -49,7 +49,7 @@ export default class Session extends EventEmitter {
     return this._id
   }
 
-  private started = false
+  private polling = false
 
   private connected = false
 
@@ -88,9 +88,9 @@ export default class Session extends EventEmitter {
   poll() {
     if(this.destroying || this.destroyed)
       throw new Error("Session is destroying or destroyed, please create another")
-    if(this.started)
+    if(this.polling)
       return
-    this.started = true
+    this.polling = true
     janusFetch(this.fullEndpoint())
     .then((r) => {
       if(!this.destroying && !this.destroyed) {
@@ -121,10 +121,15 @@ export default class Session extends EventEmitter {
           if(handle)
             handle.emit("hangup", r)
         }
-        if(!this.destroyed && !this.destroying)
+        if(!this.destroyed && !this.destroying) {
+          this.polling = false
           this.poll()
         }
-    }).catch((err) => this.emit("error", err))
+      }
+    }).catch((err) => {
+      this.emit("error", err)
+      this.polling = false
+    })
   }
 
   attach(pluginId: string | number): Promise<any> {
@@ -166,7 +171,7 @@ export default class Session extends EventEmitter {
           transaction: Session.getTransactionId()
         })
       })).then((r) => {
-        this.started = false
+        this.polling = false
         this.destroying = false
         this.destroyed = true
         this.handles = {}
