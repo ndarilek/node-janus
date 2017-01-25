@@ -16,7 +16,7 @@ in consuming code to set things up correctly. In React Native this isn't necessa
 
 Here is an example of part of the code I use to set up a WebRTC session with Janus in the browser. This is from a React component, with various event-handlers passed in from its container component, and using [Toastr](https://github.com/CodeSeven/toastr) for alerts:
 
-```
+```js
 navigator.mediaDevices.getUserMedia({audio: true, video: {facingMode: "environment"}})
 .then((stream) => {
   console.log("Got stream", stream.getAudioTracks())
